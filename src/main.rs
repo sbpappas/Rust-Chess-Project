@@ -36,11 +36,12 @@ struct Board {
 impl Board {
     fn display(&self) -> (){ //prints out the board to the screen
         for i in 0..6{ //iterate through rows
+            print!(" | ");
             for j in 0..7{//iterate thru cols
                 match self.gameBoard[i][j] {
-                    Some(Player::Red) => print!("1 "),
-                    Some(Player::Black) => print!("2 "),
-                    None => print!("0 "),
+                    Some(Player::Red) => print!("X | "),
+                    Some(Player::Black) => print!("O | "),
+                    None => print!("- | "),
                 }
             }
             println!("\n");
@@ -53,8 +54,14 @@ impl Board {
         }
     }
 
-    fn update_board(&self, _m: Move) {
-        
+    fn update_board(&mut self, m: Move) {
+        for i in (0..6).rev() {
+            let j: usize =  m.column.try_into().unwrap();
+            if self.gameBoard[i][j] != None {
+                self.gameBoard[i][j] = Some(m.player);
+                break; 
+            }
+        }
     }
 
     fn is_full(&self) -> bool {
@@ -94,7 +101,7 @@ impl Board {
 
 fn main() {
     // initialize a new game
-    let game = Board::new_board();
+    let mut game = Board::new_board();
     println!("Let's play Connect 4\n");
     game.display();
     // playing the game
@@ -133,4 +140,13 @@ fn main() {
         Some(player) => {println!("Winner is {:?}!", player)},
         None=> {println!("Tie!")}
     };   
+}
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn exploration() {
+        assert_eq!(2 + 2, 4);
+    }
 }
