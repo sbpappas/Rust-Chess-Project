@@ -56,13 +56,15 @@ impl Board {
 
     fn update_board(&mut self, m: Move) {
         for i in (0..6).rev() {
-            let j: usize =  m.column.try_into().unwrap();
-            if self.gameBoard[i][j] != None {
+            // use m.column-1 because user inputs a num from 1-7, we need 0-6
+            let j: usize = usize::try_from(m.column - 1).unwrap(); 
+            if self.gameBoard[i][j] == None {
                 self.gameBoard[i][j] = Some(m.player);
-                break; 
+                break;
             }
         }
     }
+    
 
     fn is_full(&self) -> bool {
         for j in 0..=6{//move horizontally
@@ -145,8 +147,33 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn exploration() {
-        assert_eq!(2 + 2, 4);
+    fn test_update_board() {
+        let mut my_board = Board::new_board();
+        let player_move = Move {
+            column: 3,  // Replace with the desired column value
+            player: Player::Red,  
+        };
+        let player_move2 = Move {
+            column: 3,  
+            player: Player::Black,  
+        };
+
+        my_board.update_board(player_move);
+        my_board.update_board(player_move2);
+
+        let expected_board = Board {
+            gameBoard: vec![
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, Some(Player::Black), None, None, None, None],
+                vec![None, None, Some(Player::Red), None, None, None, None],
+            ],
+        };
+        assert_eq!(my_board.gameBoard, expected_board.gameBoard);
     }
 }
