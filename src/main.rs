@@ -36,11 +36,12 @@ struct Board {
 impl Board {
     fn display(&self) -> (){ //prints out the board to the screen
         for i in 0..6{ //iterate through rows
+            print!(" | ");
             for j in 0..7{//iterate thru cols
                 match self.gameBoard[i][j] {
-                    Some(Player::Red) => print!("1 "),
-                    Some(Player::Black) => print!("2 "),
-                    None => print!("0 "),
+                    Some(Player::Red) => print!("X | "),
+                    Some(Player::Black) => print!("O | "),
+                    None => print!("- | "),
                 }
             }
             println!("\n");
@@ -53,9 +54,17 @@ impl Board {
         }
     }
 
-    fn update_board(&self, _m: Move) {
-        
+    fn update_board(&mut self, m: Move) {
+        for i in (0..6).rev() {
+            // use m.column-1 because user inputs a num from 1-7, we need 0-6
+            let j: usize = usize::try_from(m.column - 1).unwrap(); 
+            if self.gameBoard[i][j] == None {
+                self.gameBoard[i][j] = Some(m.player);
+                break;
+            }
+        }
     }
+    
 
     fn is_full(&self) -> bool {
         for j in 0..=6{//move horizontally
@@ -94,7 +103,7 @@ impl Board {
 
 fn main() {
     // initialize a new game
-    let game = Board::new_board();
+    let mut game = Board::new_board();
     println!("Let's play Connect 4\n");
     game.display();
     // playing the game
@@ -133,4 +142,38 @@ fn main() {
         Some(player) => {println!("Winner is {:?}!", player)},
         None=> {println!("Tie!")}
     };   
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_update_board() {
+        let mut my_board = Board::new_board();
+        let player_move = Move {
+            column: 3,  // Replace with the desired column value
+            player: Player::Red,  
+        };
+        let player_move2 = Move {
+            column: 3,  
+            player: Player::Black,  
+        };
+
+        my_board.update_board(player_move);
+        my_board.update_board(player_move2);
+
+        let expected_board = Board {
+            gameBoard: vec![
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, Some(Player::Black), None, None, None, None],
+                vec![None, None, Some(Player::Red), None, None, None, None],
+            ],
+        };
+        assert_eq!(my_board.gameBoard, expected_board.gameBoard);
+    }
 }
