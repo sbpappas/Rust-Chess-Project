@@ -13,17 +13,22 @@ struct Move {
 
 impl Move {
     // reads a move from a column string
-    fn read_move(c: String, player: &Player) -> Move{
-        Move {
-            player: player.clone(),
-            column: match c.parse::<i32>() {
-                Ok(num) => {
-                    num
-                }
-                Err(_) => {
-                    println!("Failed to parse the column!");
-                    panic!();
-                }
+    fn read_move(c: String, player: &Player) -> Option<Move>{
+        let trimmed_c = c.trim().parse::<i32>(); //trim the newline character and parse the int
+
+        match trimmed_c{
+            // if int parsed, return the move
+            Ok(num) => {
+                Some(Move{
+                    player: player.clone(),
+                    column: num,
+                })
+            },
+
+            // return None
+            Err(_) => {
+                println!("Failed to parse the column!");
+                None
             }
         }
     }
@@ -120,8 +125,16 @@ fn main() {
         //else println!("Input move for Black");
 
         // println!("Input move for {}: ", &current_player);
-        io::stdin().read_line(&mut move_column).expect("Failed to read line");
-        let current_move = Move::read_move(move_column, &current_player);
+
+        // repeatedly scan input until valid
+        let mut current_move: Option<Move> = None;
+        while current_move.is_none() {
+            let mut move_column = String::new();
+            io::stdin().read_line(&mut move_column).expect("Failed to read line");
+            current_move = Move::read_move(move_column, &current_player);
+        }
+        //unwrap the optional
+        let current_move = current_move.unwrap();
         
         // update the board and display the board
         game.update_board(current_move);
