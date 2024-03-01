@@ -1,6 +1,6 @@
 use std::io;
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Copy, Debug)]
 enum Player {
     Red,
     Black,
@@ -85,21 +85,52 @@ impl Board {
         let mut winner: Option<Player> = None;
         //horizontal check
         
-        // for i in 0..=3{
-        //     for j in 0..=5{
-        //         if self.gameBoard[j][i]== self.gameBoard[j][i+1] && self.gameBoard[j][i]== self.gameBoard[j][i+2] && self.gameBoard[j][i]== self.gameBoard[j][i+3] {
-        //             if self.gameBoard[j][i] != None {
-        //                 winner = self.gameBoard[j][i]
-        //             }
-        //         }
-        //     }
-        // }
+        for i in 0..=3{
+            for j in 0..=5{
+                if self.gameBoard[j][i]== self.gameBoard[j][i+1] && self.gameBoard[j][i]== self.gameBoard[j][i+2] && self.gameBoard[j][i]== self.gameBoard[j][i+3] {
+                    if self.gameBoard[j][i] != None {
+                        winner = self.gameBoard[j][i]
+                    }
+                }
+            }
+        }
     
         //vertical check
 
-        //diagonal check
+        for i in 0..=3{
+            for j in 0..=5{
+                if self.gameBoard[j][i]== self.gameBoard[j+1][i] && self.gameBoard[j][i]== self.gameBoard[j+2][i] && self.gameBoard[j][i]== self.gameBoard[j+3][i] {
+                    if self.gameBoard[j][i] != None {
+                        winner = self.gameBoard[j][i]
+                    }
+                }
+            }
+        }
+
+        //ascending diagonal check
+
+        for i in 0..=3{
+            for j in 0..=5{
+                if self.gameBoard[j][i]== self.gameBoard[j-1][i+1] && self.gameBoard[j][i]== self.gameBoard[j-2][i+2] && self.gameBoard[j][i]== self.gameBoard[j-3][i+3] {
+                    if self.gameBoard[j][i] != None {
+                        winner = self.gameBoard[j][i]
+                    }
+                }
+            }
+        }
+
+        //descending diagonal check
+
+        for i in 0..=3{
+            for j in 0..=5{
+                if self.gameBoard[j][i]== self.gameBoard[j-1][i-1] && self.gameBoard[j][i]== self.gameBoard[j-2][i-2] && self.gameBoard[j][i]== self.gameBoard[j-3][i-3] {
+                    if self.gameBoard[j][i] != None {
+                        winner = self.gameBoard[j][i]
+                    }
+                }
+            }
+        }
         
-        // fix compiler error temporary
         winner
     }
 
