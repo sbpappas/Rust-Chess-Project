@@ -147,7 +147,7 @@ fn main() {
     let mut winner: Option<Player> = None;
     
     // start the main loop
-    while winner == None || !game.is_full() {
+    while winner == None && !game.is_full() {
         // read input
         let mut move_column = String::new();
         //if current_player == Player::Red {
@@ -179,6 +179,7 @@ fn main() {
 
         // check to see if there is a winner
         winner = game.check_winner();
+        println!("{:?}",winner);
     }
 
     // check to see if there is a winner or if there was a tie
