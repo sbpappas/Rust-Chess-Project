@@ -97,11 +97,11 @@ impl Board {
     
         //vertical check
 
-        for i in 0..=3{
-            for j in 0..=5{
-                if self.gameBoard[j][i]== self.gameBoard[j+1][i] && self.gameBoard[j][i]== self.gameBoard[j+2][i] && self.gameBoard[j][i]== self.gameBoard[j+3][i] {
-                    if self.gameBoard[j][i] != None {
-                        winner = self.gameBoard[j][i]
+        for i in 0..=2{
+            for j in 0..=6{
+                if self.gameBoard[i][j]== self.gameBoard[i+1][j] && self.gameBoard[i][j]== self.gameBoard[i+2][j] && self.gameBoard[i][j]== self.gameBoard[i+3][j] {
+                    if self.gameBoard[i][j] != None {
+                        winner = self.gameBoard[i][j]
                     }
                 }
             }
@@ -109,11 +109,11 @@ impl Board {
 
         //ascending diagonal check
 
-        for i in 0..=3{
-            for j in 0..=5{
-                if self.gameBoard[j][i]== self.gameBoard[j-1][i+1] && self.gameBoard[j][i]== self.gameBoard[j-2][i+2] && self.gameBoard[j][i]== self.gameBoard[j-3][i+3] {
-                    if self.gameBoard[j][i] != None {
-                        winner = self.gameBoard[j][i]
+        for i in 3..=5{
+            for j in 0..=3{
+                if self.gameBoard[i][j]== self.gameBoard[i-1][j+1] && self.gameBoard[i][j]== self.gameBoard[i-2][j+2] && self.gameBoard[i][j]== self.gameBoard[i-3][j+3] {
+                    if self.gameBoard[i][j] != None {
+                        winner = self.gameBoard[i][j]
                     }
                 }
             }
@@ -121,11 +121,11 @@ impl Board {
 
         //descending diagonal check
 
-        for i in 0..=3{
-            for j in 0..=5{
-                if self.gameBoard[j][i]== self.gameBoard[j-1][i-1] && self.gameBoard[j][i]== self.gameBoard[j-2][i-2] && self.gameBoard[j][i]== self.gameBoard[j-3][i-3] {
-                    if self.gameBoard[j][i] != None {
-                        winner = self.gameBoard[j][i]
+        for i in 3..=5{
+            for j in 3..=6{
+                if self.gameBoard[i][j]== self.gameBoard[i-1][j-1] && self.gameBoard[i][j]== self.gameBoard[i-2][j-2] && self.gameBoard[i][j]== self.gameBoard[i-3][j-3] {
+                    if self.gameBoard[i][j] != None {
+                        winner = self.gameBoard[i][j]
                     }
                 }
             }
@@ -219,5 +219,83 @@ mod tests {
             ],
         };
         assert_eq!(my_board.gameBoard, expected_board.gameBoard);
+    }
+
+    #[test]
+    fn test_winner() {
+        let mut my_board = Board::new_board();
+        let player_move0 = Move {
+            column: 7,
+            player: Player::Red,  
+        };
+        let player_move1 = Move {
+            column: 6,
+            player: Player::Red,  
+        };
+        let player_move2 = Move {
+            column: 5,
+            player: Player::Red,  
+        };
+        let player_move3 = Move {
+            column: 4,
+            player: Player::Red,  
+        };
+
+        let player_move10 = Move {
+            column: 7,
+            player: Player::Black,  
+        };
+        let player_move11 = Move {
+            column: 7,
+            player: Player::Black,  
+        };
+        let player_move12 = Move {
+            column: 7,
+            player: Player::Black,  
+        };
+        let player_move13 = Move {
+            column: 6,
+            player: Player::Black,  
+        };
+
+        let player_move22 = Move {
+            column: 6,
+            player: Player::Black,  
+        };
+        let player_move23 = Move {
+            column: 5,
+            player: Player::Black,  
+        };
+
+        my_board.update_board(player_move10);
+        my_board.update_board(player_move11);
+        my_board.update_board(player_move12);
+        my_board.update_board(player_move13);
+
+        my_board.update_board(player_move22);
+        my_board.update_board(player_move23);
+
+        my_board.update_board(player_move0);
+        my_board.update_board(player_move1);
+        my_board.update_board(player_move2);
+        my_board.update_board(player_move3);
+
+        let expected_board = Board {
+            gameBoard: vec![
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, None],
+                vec![None, None, None, None, None, None, Some(Player::Red)],
+                vec![None, None, None, None, None, Some(Player::Red), Some(Player::Black)],
+                vec![None, None, None, None, Some(Player::Red), Some(Player::Black), Some(Player::Black)],
+                vec![None, None, None, Some(Player::Red), Some(Player::Black), Some(Player::Black), Some(Player::Black)],
+            ],
+        };
+
+        let mut winner: Option<Player> = None;
+
+        winner = my_board.check_winner();
+
+        assert_eq!(my_board.gameBoard, expected_board.gameBoard);
+        assert_eq!(expected_board.check_winner(), winner);
     }
 }
