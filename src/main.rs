@@ -19,15 +19,20 @@ impl Move {
         match trimmed_c{
             // if int parsed, return the move
             Ok(num) => {
-                Some(Move{
-                    player: player.clone(),
-                    column: num,
-                })
+                if num > 0 && num <= 8{
+                    Some(Move{
+                        player: player.clone(),
+                        column: num,
+                    })
+                }else{
+                    println!("Enter a number within bounds (1-8)!");
+                    None
+                }
             },
 
             // return None
             Err(_) => {
-                println!("Failed to parse the column!");
+                println!("Enter a number between 1 and 8!");
                 None
             }
         }
@@ -35,7 +40,7 @@ impl Move {
 }
 
 struct Board {
-    gameBoard: Vec<Vec<Option<Player>>>,
+    game_board: Vec<Vec<Option<Player>>>,
 }
 
 impl Board {
@@ -43,7 +48,7 @@ impl Board {
         for i in 0..6{ //iterate through rows
             print!(" | ");
             for j in 0..7{//iterate thru cols
-                match self.gameBoard[i][j] {
+                match self.game_board[i][j] {
                     Some(Player::Red) => print!("X | "),
                     Some(Player::Black) => print!("O | "),
                     None => print!("- | "),
@@ -55,7 +60,7 @@ impl Board {
     
     fn new_board() -> Board {
         Board { 
-            gameBoard: vec![vec![None; 7]; 6]
+            game_board: vec![vec![None; 7]; 6]
         }
     }
 
@@ -63,8 +68,8 @@ impl Board {
         for i in (0..6).rev() {
             // use m.column-1 because user inputs a num from 1-7, we need 0-6
             let j: usize = usize::try_from(m.column - 1).unwrap(); 
-            if self.gameBoard[i][j] == None {
-                self.gameBoard[i][j] = Some(m.player);
+            if self.game_board[i][j] == None {
+                self.game_board[i][j] = Some(m.player);
                 break;
             }
         }
@@ -73,7 +78,7 @@ impl Board {
 
     fn is_full(&self) -> bool {
         for j in 0..=6{//move horizontally
-            if self.gameBoard[0][j] == None { //go through the top row and find if any spot is open
+            if self.game_board[0][j] == None { //go through the top row and find if any spot is open
                 return false
             }
         }
@@ -87,9 +92,9 @@ impl Board {
         
         for i in 0..=3{
             for j in 0..=5{
-                if self.gameBoard[j][i]== self.gameBoard[j][i+1] && self.gameBoard[j][i]== self.gameBoard[j][i+2] && self.gameBoard[j][i]== self.gameBoard[j][i+3] {
-                    if self.gameBoard[j][i] != None {
-                        winner = self.gameBoard[j][i]
+                if self.game_board[j][i]== self.game_board[j][i+1] && self.game_board[j][i]== self.game_board[j][i+2] && self.game_board[j][i]== self.game_board[j][i+3] {
+                    if self.game_board[j][i] != None {
+                        winner = self.game_board[j][i]
                     }
                 }
             }
@@ -99,9 +104,9 @@ impl Board {
 
         for i in 0..=2{
             for j in 0..=6{
-                if self.gameBoard[i][j]== self.gameBoard[i+1][j] && self.gameBoard[i][j]== self.gameBoard[i+2][j] && self.gameBoard[i][j]== self.gameBoard[i+3][j] {
-                    if self.gameBoard[i][j] != None {
-                        winner = self.gameBoard[i][j]
+                if self.game_board[i][j]== self.game_board[i+1][j] && self.game_board[i][j]== self.game_board[i+2][j] && self.game_board[i][j]== self.game_board[i+3][j] {
+                    if self.game_board[i][j] != None {
+                        winner = self.game_board[i][j]
                     }
                 }
             }
@@ -111,9 +116,9 @@ impl Board {
 
         for i in 3..=5{
             for j in 0..=3{
-                if self.gameBoard[i][j]== self.gameBoard[i-1][j+1] && self.gameBoard[i][j]== self.gameBoard[i-2][j+2] && self.gameBoard[i][j]== self.gameBoard[i-3][j+3] {
-                    if self.gameBoard[i][j] != None {
-                        winner = self.gameBoard[i][j]
+                if self.game_board[i][j]== self.game_board[i-1][j+1] && self.game_board[i][j]== self.game_board[i-2][j+2] && self.game_board[i][j]== self.game_board[i-3][j+3] {
+                    if self.game_board[i][j] != None {
+                        winner = self.game_board[i][j]
                     }
                 }
             }
@@ -123,9 +128,9 @@ impl Board {
 
         for i in 3..=5{
             for j in 3..=6{
-                if self.gameBoard[i][j]== self.gameBoard[i-1][j-1] && self.gameBoard[i][j]== self.gameBoard[i-2][j-2] && self.gameBoard[i][j]== self.gameBoard[i-3][j-3] {
-                    if self.gameBoard[i][j] != None {
-                        winner = self.gameBoard[i][j]
+                if self.game_board[i][j]== self.game_board[i-1][j-1] && self.game_board[i][j]== self.game_board[i-2][j-2] && self.game_board[i][j]== self.game_board[i-3][j-3] {
+                    if self.game_board[i][j] != None {
+                        winner = self.game_board[i][j]
                     }
                 }
             }
@@ -140,7 +145,7 @@ impl Board {
 fn main() {
     // initialize a new game
     let mut game = Board::new_board();
-    println!("Let's play Connect 4\n");
+    println!("Let's play Connect 4!\n");
     game.display();
     // playing the game
     let mut current_player = Player::Red;
@@ -148,18 +153,13 @@ fn main() {
     
     // start the main loop
     while winner == None && !game.is_full() {
-        // read input
-        let mut move_column = String::new();
-        //if current_player == Player::Red {
-            //println!("Input move for Red");
-        //}
-        //else println!("Input move for Black");
-
-        // println!("Input move for {}: ", &current_player);
-
         // repeatedly scan input until valid
         let mut current_move: Option<Move> = None;
         while current_move.is_none() {
+            match &current_player{
+                Player::Red => {println!("Input move for X: ")},
+                Player::Black => {println!("Input move for O: ")},
+            }    
             let mut move_column = String::new();
             io::stdin().read_line(&mut move_column).expect("Failed to read line");
             current_move = Move::read_move(move_column, &current_player);
@@ -179,12 +179,13 @@ fn main() {
 
         // check to see if there is a winner
         winner = game.check_winner();
-        println!("{:?}",winner);
+        // println!("{:?}",winner);
     }
 
     // check to see if there is a winner or if there was a tie
     match winner {
-        Some(player) => {println!("Winner is {:?}!", player)},
+        Some(Player::Red) => {println!("Winner is X!")},
+        Some(Player::Black) => {println!("Winner is O!")},
         None=> {println!("Tie!")}
     };   
 }
@@ -210,7 +211,7 @@ mod tests {
         my_board.update_board(player_move2);
 
         let expected_board = Board {
-            gameBoard: vec![
+            game_board: vec![
                 vec![None, None, None, None, None, None, None],
                 vec![None, None, None, None, None, None, None],
                 vec![None, None, None, None, None, None, None],
@@ -219,7 +220,7 @@ mod tests {
                 vec![None, None, Some(Player::Red), None, None, None, None],
             ],
         };
-        assert_eq!(my_board.gameBoard, expected_board.gameBoard);
+        assert_eq!(my_board.game_board, expected_board.game_board);
     }
 
     #[test]
@@ -282,7 +283,7 @@ mod tests {
         my_board.update_board(player_move3);
 
         let expected_board = Board {
-            gameBoard: vec![
+            game_board: vec![
                 vec![None, None, None, None, None, None, None],
                 vec![None, None, None, None, None, None, None],
                 vec![None, None, None, None, None, None, Some(Player::Red)],
@@ -296,7 +297,7 @@ mod tests {
 
         winner = my_board.check_winner();
 
-        assert_eq!(my_board.gameBoard, expected_board.gameBoard);
+        assert_eq!(my_board.game_board, expected_board.game_board);
         assert_eq!(expected_board.check_winner(), winner);
     }
 }
