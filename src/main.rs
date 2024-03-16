@@ -1,4 +1,5 @@
 use std::io;
+use bevy::prelude::*; //brings in the necessary things for the GUI
 
 #[derive(Clone, PartialEq, Copy, Debug)]
 enum Player {
@@ -19,13 +20,13 @@ impl Move {
         match trimmed_c{
             // if int parsed, return the move
             Ok(num) => {
-                if num > 0 && num <= 8{
+                if num > 0 && num <= 7{
                     Some(Move{
                         player: player.clone(),
                         column: num,
                     })
                 }else{
-                    println!("Enter a number within bounds (1-8)!");
+                    println!("Enter a number within bounds (1-7)!");
                     None
                 }
             },
@@ -144,6 +145,10 @@ impl Board {
 
 fn main() {
     // initialize a new game
+    App::new()
+    .add_plugins(DefaultPlugins)
+    .run();
+
     let mut game = Board::new_board();
     println!("Let's play Connect 4!\n");
     game.display();
