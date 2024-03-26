@@ -143,6 +143,7 @@ fn update(app: &mut App, state: &mut State) {
             state.tie = Some(Tied::Yes);
         }
     }
+    
 }
 
 fn is_full(table: &[[Option<Player>; 8]; 7]) -> bool {
