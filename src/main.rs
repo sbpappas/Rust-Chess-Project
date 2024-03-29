@@ -115,7 +115,7 @@ fn update(app: &mut App, state: &mut State) {
     let height = HEIGHT - MARGIN * 2.0;
 
     let tile_width = width / 7.0;
-    let tile_height = height / 6.0;
+    let _tile_height = height / 6.0;
 
     let (mx, my) = app.mouse.position();
 
@@ -169,10 +169,10 @@ fn update(app: &mut App, state: &mut State) {
     
     for row in state.table.iter() {
         for cell in row.iter() {
-            app.mouse.x.log(3.4); //none of this prints!?
+            //app.mouse.x.log(3.4); //none of this prints!? Is log a print statement or logarithm?
             println!("hello from rust");
             if let Ok(num) = format_player(*cell).parse::<f32>() {
-                app.mouse.x.log(num);
+                let _ = app.mouse.x.log(num);
             }
         }
     }
