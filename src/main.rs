@@ -8,11 +8,32 @@ const MARGIN: f32 = 50.0;
 
 
 #[derive(Default, Copy, Clone, PartialEq)]
+#[derive(Debug)]
 enum Player {
     #[default]
     Red,
     Yellow,
 }
+
+use std::fmt;
+
+impl std::fmt::Display for Player { //this is for debugging
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Player::Red => write!(f, "Red"),
+            Player::Yellow => write!(f, "Yellow"),
+        }
+    }
+}
+
+fn format_player(player: Option<Player>) -> String {
+    match player {
+        Some(p) => p.to_string(),
+        None => "None".to_string(),
+    }
+}
+
+
 
 enum Tied {
     Yes,
@@ -65,6 +86,7 @@ impl State {
 }
 
 fn main() -> Result<(), String> {
+    
     let win = WindowConfig::default()
         .set_multisampling(8)
         .set_size(WIDTH as _, HEIGHT as _)
@@ -79,6 +101,7 @@ fn main() -> Result<(), String> {
 }
 
 fn update(app: &mut App, state: &mut State) {
+    
     if state.winner.is_some() {
         if app.keyboard.was_pressed(KeyCode::Space) {
             state.reset();
@@ -143,6 +166,17 @@ fn update(app: &mut App, state: &mut State) {
             state.tie = Some(Tied::Yes);
         }
     }
+    
+    for row in state.table.iter() {
+        for cell in row.iter() {
+            app.mouse.x.log(3.4); //none of this prints!?
+            println!("hello from rust");
+            if let Ok(num) = format_player(*cell).parse::<f32>() {
+                app.mouse.x.log(num);
+            }
+        }
+    }
+    
     
 }
 
@@ -252,7 +286,7 @@ fn draw(gfx: &mut Graphics, state: &mut State) {
        // }      
     }
 
-    // // drawing pieces
+    // drawing pieces
     state.table.iter().enumerate().for_each(|(i, p)| {
         let pos_x = i as f32 * size.x + x*1.72;
 
