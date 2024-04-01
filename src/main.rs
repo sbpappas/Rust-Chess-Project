@@ -1,13 +1,14 @@
 use notan::draw::*;
 use notan::math::{vec2, Mat3, Vec2};
 use notan::prelude::*;
+use notan::log::debug;
 
 const WIDTH: f32 = 600.0;
 const HEIGHT: f32 = 600.0;
 const MARGIN: f32 = 50.0;
 
 
-#[derive(Default, Copy, Clone, PartialEq)]
+#[derive(Default, Copy, Clone, PartialEq, Debug)]
 enum Player {
     #[default]
     Red,
@@ -23,7 +24,7 @@ struct State {
     rng: Random,
     font: Font,
     turn: Player,
-    table: [[Option<Player>; 8];7],
+    table: [[Option<Player>; 7];6],
     winner: Option<Player>,
     tie: Option<Tied>,
 }
@@ -64,7 +65,7 @@ impl State {
     }
 }
 
-fn main() -> Result<(), String> {
+pub fn main() -> Result<(), String> {
     let win = WindowConfig::default()
         .set_multisampling(8)
         .set_size(WIDTH as _, HEIGHT as _)
@@ -92,7 +93,6 @@ fn update(app: &mut App, state: &mut State) {
     let height = HEIGHT - MARGIN * 2.0;
 
     let tile_width = width / 7.0;
-    let tile_height = height / 6.0;
 
     let (mx, my) = app.mouse.position();
 
@@ -109,9 +109,12 @@ fn update(app: &mut App, state: &mut State) {
         // inside the table
         let col = ((mx - x) / tile_width).floor();
         let index = index_from_pos(col as _);
-
+        // debug!("{} index", index);
+        // debug!("col {}", col);
+        debug!("table cols and rows: {} {}", state.table.len(), state.table[0].len());
         // set piece
-        let is_empty = matches!(state.table[index][6], None);
+        let is_empty = matches!(state.table[col as usize][0], None);
+        debug!("is_empty index: {:?}", state.table[0][index]);
         if !is_empty {
             return;
         }
@@ -125,7 +128,7 @@ fn update(app: &mut App, state: &mut State) {
             }
         }     
             state.table[col as usize][row] = Some(state.turn);
-        
+            debug!("state.table: {:?}", state.table[col as usize][row]);
 
         // change turn
         state.turn = match state.turn {
@@ -145,16 +148,16 @@ fn update(app: &mut App, state: &mut State) {
     }
 }
 
-fn is_full(table: &[[Option<Player>; 8]; 7]) -> bool {
+fn is_full(table: &[[Option<Player>; 7]; 6]) -> bool {
     for j in 0..=6{//move horizontally
-        if table[0][j] == None { //go through the top row and find if any spot is open
+        if table[j][0] == None { //go through the top row and find if any spot is open
             return false
         }
     }
     true
 }
 
-fn check_winner(table: &[[Option<Player>; 8];7]) -> Option<Player> {
+fn check_winner(table: &[[Option<Player>; 7];6]) -> Option<Player> {
     let mut winner: Option<Player> = None;
     //horizontal check
     
@@ -237,7 +240,7 @@ fn draw(gfx: &mut Graphics, state: &mut State) {
         .stroke_color(Color::BLUE)
         .stroke(6.0);
 
-    for index in 1..8 {
+    for index in 0..7 {
             draw.line(
                 (x + tile_width * index as f32, y),
                 (x + tile_width * index as f32, y + height),
@@ -248,14 +251,14 @@ fn draw(gfx: &mut Graphics, state: &mut State) {
                 (x + width, y + tile_height * index as f32),
             )
             .width(2.0).color(Color::BLUE);
-       // }      
+    // }      
     }
 
     // // drawing pieces
     state.table.iter().enumerate().for_each(|(i, p)| {
         let pos_x = i as f32 * size.x + x*1.72;
 
-       for row_i in 0..7 {
+    for row_i in 0..6 {
 
             let pos_y = row_i as f32 * size.y + y *1.8;
             match p[row_i] {
