@@ -2,6 +2,8 @@ use notan::draw::*;
 use notan::math::{vec2, Mat3, Vec2};
 use notan::prelude::*;
 
+use notan::log::debug;
+
 const WIDTH: f32 = 600.0;
 const HEIGHT: f32 = 600.0;
 const MARGIN: f32 = 50.0;
@@ -86,6 +88,9 @@ impl State {
 }
 
 fn main() -> Result<(), String> {
+    let x = 5;
+    debug!("New position: x: {}", x);
+    
     
     let win = WindowConfig::default()
         .set_multisampling(8)
@@ -132,6 +137,7 @@ fn update(app: &mut App, state: &mut State) {
         // inside the table
         let col = ((mx - x) / tile_width).floor();
         let index = index_from_pos(col as _);
+        debug!("index logged: {}", index);
 
         // set piece
         let is_empty = matches!(state.table[index][6], None);
