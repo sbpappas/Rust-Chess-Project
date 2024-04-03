@@ -110,10 +110,10 @@ fn update(app: &mut App, state: &mut State) {
         let col = ((mx - x) / tile_width).floor();
         let index = index_from_pos(col as _);
         // debug!("{} index", index);
-        // debug!("col {}", col);
-        debug!("table cols and rows: {} {}", state.table.len(), state.table[0].len());
+
+        debug!("table cols and rows: {}", state.table.len(), );
         // set piece
-        let is_empty = matches!(state.table[col as usize][0], None);
+        let is_empty = matches!(state.table[0][col as usize], None);
         debug!("is_empty index: {:?}", state.table[0][index]);
         if !is_empty {
             return;
@@ -122,13 +122,12 @@ fn update(app: &mut App, state: &mut State) {
         let mut row = 0;
 
         for i in (0..6).rev() {
-            if state.table[col as usize][i].is_none() {
+            if state.table[i][col as usize].is_none() {
                 row = i;
                 break;
             }
         }     
-            state.table[col as usize][row] = Some(state.turn);
-            debug!("state.table: {:?}", state.table[col as usize][row]);
+            state.table[row][col as usize] = Some(state.turn);
 
         // change turn
         state.turn = match state.turn {
@@ -150,7 +149,7 @@ fn update(app: &mut App, state: &mut State) {
 
 fn is_full(table: &[[Option<Player>; 7]; 6]) -> bool {
     for j in 0..=6{//move horizontally
-        if table[j][0] == None { //go through the top row and find if any spot is open
+        if table[0][j] == None { //go through the top row and find if any spot is open
             return false
         }
     }
@@ -232,7 +231,7 @@ fn draw(gfx: &mut Graphics, state: &mut State) {
         "Playing: ",
         24.0,
         vec2(300.0, MARGIN * 0.5),
-        0.2,
+        1.0,
     );
 
     // drawing board
@@ -256,12 +255,12 @@ fn draw(gfx: &mut Graphics, state: &mut State) {
 
     // // drawing pieces
     state.table.iter().enumerate().for_each(|(i, p)| {
-        let pos_x = i as f32 * size.x + x*1.72;
+        let pos_y = i as f32 * size.y + y *1.8;
 
-    for row_i in 0..6 {
+        for col_i in 0..7 {
+            let pos_x = col_i as f32 * size.x + x*1.72;
 
-            let pos_y = row_i as f32 * size.y + y *1.8;
-            match p[row_i] {
+            match p[col_i] {
                 Some(Player::Red) => draw_red(&mut draw, Vec2{x: size.x * 1.75, y: size.y * 1.75}, vec2(pos_x, pos_y)),
                 Some(Player::Yellow) =>  draw_yellow(&mut draw, Vec2{x: size.x * 1.75, y: size.y * 1.75}, vec2(pos_x, pos_y)),
                 None => {}
